@@ -14,8 +14,13 @@ enum class Instrument {
   Clarinet = 2,
 };
 
+/// test
 struct Musician {
+  static const uint32_t opcode = 0x5A5A414A;
+
+  /// a name
   std::string name;
+  /// an instrument
   Instrument plays;
 
   static void encodeInto(const Musician& message, std::vector<uint8_t>& targetBuffer) {
