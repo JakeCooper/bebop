@@ -18,7 +18,7 @@ struct Musician {
   std::string name;
   Instrument plays;
 
-  static void encodeInto(const Musician& message, std::vector<uint8_t> &targetBuffer) {
+  static void encodeInto(const Musician& message, std::vector<uint8_t>& targetBuffer) {
     ::bebop::Writer writer{targetBuffer};
     Musician::encodeInto(message, writer);
   }
@@ -28,13 +28,13 @@ struct Musician {
     writer.writeUint32(static_cast<uint32_t>(message.plays));
   }
 
-  static Musician decode(const uint8_t *sourceBuffer) {
+  static Musician decode(const uint8_t* sourceBuffer) {
     Musician result;
     Musician::decodeInto(sourceBuffer, result);
     return result;
   }
 
-  static void decodeInto(const uint8_t *sourceBuffer, Musician& target) {
+  static void decodeInto(const uint8_t* sourceBuffer, Musician& target) {
     ::bebop::Reader reader{sourceBuffer};
     Musician::decodeInto(reader, target);
   }
@@ -50,7 +50,7 @@ struct Song {
   std::optional<uint16_t> year;
   std::optional<std::vector<Musician>> performers;
 
-  static void encodeInto(const Song& message, std::vector<uint8_t> &targetBuffer) {
+  static void encodeInto(const Song& message, std::vector<uint8_t>& targetBuffer) {
     ::bebop::Writer writer{targetBuffer};
     Song::encodeInto(message, writer);
   }
@@ -81,13 +81,13 @@ struct Song {
     writer.fillMessageLength(pos, end - start);
   }
 
-  static Song decode(const uint8_t *sourceBuffer) {
+  static Song decode(const uint8_t* sourceBuffer) {
     Song result;
     Song::decodeInto(sourceBuffer, result);
     return result;
   }
 
-  static void decodeInto(const uint8_t *sourceBuffer, Song& target) {
+  static void decodeInto(const uint8_t* sourceBuffer, Song& target) {
     ::bebop::Reader reader{sourceBuffer};
     Song::decodeInto(reader, target);
   }
@@ -128,7 +128,7 @@ struct Song {
 struct Library {
   std::map<::bebop::Guid, Song> songs;
 
-  static void encodeInto(const Library& message, std::vector<uint8_t> &targetBuffer) {
+  static void encodeInto(const Library& message, std::vector<uint8_t>& targetBuffer) {
     ::bebop::Writer writer{targetBuffer};
     Library::encodeInto(message, writer);
   }
@@ -141,13 +141,13 @@ struct Library {
     }
   }
 
-  static Library decode(const uint8_t *sourceBuffer) {
+  static Library decode(const uint8_t* sourceBuffer) {
     Library result;
     Library::decodeInto(sourceBuffer, result);
     return result;
   }
 
-  static void decodeInto(const uint8_t *sourceBuffer, Library& target) {
+  static void decodeInto(const uint8_t* sourceBuffer, Library& target) {
     ::bebop::Reader reader{sourceBuffer};
     Library::decodeInto(reader, target);
   }

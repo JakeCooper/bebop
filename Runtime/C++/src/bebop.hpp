@@ -297,9 +297,8 @@ public:
     void writeByte(uint8_t value) { m_buffer.push_back(value); }
     void writeUint16(uint16_t value) {
 #if BEBOP_ASSUME_LITTLE_ENDIAN
-        const auto position = m_buffer.size();
-        m_buffer.resize(position + sizeof(value));
-        memcpy(m_buffer.data() + position, &value, sizeof(value));
+        auto start = reinterpret_cast<uint8_t*>(&value);
+        m_buffer.insert(m_buffer.end(), start, start + sizeof(value));
 #else
         m_buffer.push_back(value);
         m_buffer.push_back(value >> 8);
@@ -307,9 +306,8 @@ public:
     }
     void writeUint32(uint32_t value) {
 #if BEBOP_ASSUME_LITTLE_ENDIAN
-        const auto position = m_buffer.size();
-        m_buffer.resize(position + sizeof(value));
-        memcpy(m_buffer.data() + position, &value, sizeof(value));
+        auto start = reinterpret_cast<uint8_t*>(&value);
+        m_buffer.insert(m_buffer.end(), start, start + sizeof(value));
 #else
         m_buffer.push_back(value);
         m_buffer.push_back(value >> 8);
@@ -319,9 +317,8 @@ public:
     }
     void writeUint64(uint64_t value) {
 #if BEBOP_ASSUME_LITTLE_ENDIAN
-        const auto position = m_buffer.size();
-        m_buffer.resize(position + sizeof(value));
-        memcpy(m_buffer.data() + position, &value, sizeof(value));
+        auto start = reinterpret_cast<uint8_t*>(&value);
+        m_buffer.insert(m_buffer.end(), start, start + sizeof(value));
 #else
         m_buffer.push_back(value);
         m_buffer.push_back(value >> 0x08);
@@ -362,6 +359,11 @@ public:
     }
 
     void writeGuid(Guid value) {
+#if BEBOP_ASSUME_LITTLE_ENDIAN
+        static_assert(sizeof(Guid) == 16, "Error: sizeof(Guid) != 16. Is #pragma pack unsupported?");
+        auto start = reinterpret_cast<uint8_t*>(&value);
+        m_buffer.insert(m_buffer.end(), start, start + sizeof(value));
+#else
         writeUint32(value.m_a);
         writeUint16(value.m_b);
         writeUint16(value.m_c);
@@ -373,6 +375,7 @@ public:
         writeByte(value.m_i);
         writeByte(value.m_j);
         writeByte(value.m_k);
+#endif
     }
 
     void writeDate(TickDuration duration) {
