@@ -132,7 +132,7 @@ struct Guid {
     }
 
     std::string toString(GuidStyle style = GuidStyle::Dashes) const {
-        int size = style == GuidStyle::Dashes ? 36 : 32;
+        size_t size = style == GuidStyle::Dashes ? 36 : 32;
         const char* dash = style == GuidStyle::Dashes ? "-" : "";
         std::unique_ptr<char[]> buffer(new char[size+1]);
         snprintf(buffer.get(), size+1, "%08x%s%04x%s%04x%s%02x%02x%s%02x%02x%02x%02x%02x%02x",
