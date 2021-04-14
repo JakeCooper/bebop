@@ -51,6 +51,20 @@ namespace Core.Meta
     }
 
     /// <summary>
+    /// An option type, like "string?". It represents a possibly absent value.
+    /// </summary>
+    class OptionType : TypeBase
+    {
+        public TypeBase MemberType { get; }
+        public OptionType(TypeBase memberType, Span span, string asString) : base(span, asString)
+        {
+            MemberType = memberType;
+        }
+
+        internal override IEnumerable<string> Dependencies() => MemberType.Dependencies();
+    }
+
+    /// <summary>
     /// A map type, like "map[int, int]" or "map[string, map[int, Foo]]".
     /// It represents a list of key-value pairs, where each key occurs only once.
     /// </summary>
@@ -112,6 +126,7 @@ namespace Core.Meta
         {
             return type switch
             {
+                OptionType => 1,
                 ArrayType or MapType => 4,
                 ScalarType st => st.BaseType.Size(),
                 DefinedType dt when schema is not null && schema.Definitions[dt.Name] is EnumDefinition => 4,

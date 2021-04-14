@@ -1,0 +1,12 @@
+struct OptionTest {
+    string? optionalString;
+    string requiredString;
+    option[guid] optionalGuid;
+    guid requiredGuid;
+    // I don't even know what's gonna happen
+    int32?? twiceOptional;
+    option[option[int32]] alsoTwiceOptional;
+
+    int32?[] listOfOptional;
+    int32[]? optionalList;
+}

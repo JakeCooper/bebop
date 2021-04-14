@@ -453,6 +453,15 @@ namespace Core.Parser
                 Expect(TokenKind.CloseBracket, hint: arrayHint);
                 type = new ArrayType(valueType, span, $"array[{valueType.AsString}]");
             }
+            else if (Eat(TokenKind.Option))
+            {
+                // Parse "option[v]".
+                var arrayHint = "The syntax for option types is either option[Type] or Type?.";
+                Expect(TokenKind.OpenBracket, hint: arrayHint);
+                var valueType = ParseType(definitionToken);
+                Expect(TokenKind.CloseBracket, hint: arrayHint);
+                type = new OptionType(valueType, span, $"option[{valueType.AsString}]");
+            }
             else if (CurrentToken.TryParseBaseType(out var baseType))
             {
                 type = new ScalarType(baseType!.Value, span, CurrentToken.Lexeme);
@@ -467,12 +476,24 @@ namespace Core.Parser
                 Expect(TokenKind.Identifier);
             }
 
-            // Parse any postfix "[]".
-            while (Eat(TokenKind.OpenBracket))
+            // Parse any postfix "[]" or "?".
+            while (true)
             {
-                span = span.Combine(CurrentToken.Span);
-                Expect(TokenKind.CloseBracket, hint: "The syntax for array types is T[]. You can't specify a fixed size.");
-                type = new ArrayType(type, span, $"{type.AsString}[]");
+                if (Eat(TokenKind.OpenBracket))
+                {
+                    span = span.Combine(CurrentToken.Span);
+                    Expect(TokenKind.CloseBracket, hint: "The syntax for array types is T[]. You can't specify a fixed size.");
+                    type = new ArrayType(type, span, $"{type.AsString}[]");
+                }
+                else if (Eat(TokenKind.QuestionMark))
+                {
+                    span = span.Combine(CurrentToken.Span);
+                    type = new OptionType(type, span, $"{type.AsString}?");
+                }
+                else
+                {
+                    break;
+                }
             }
 
             return type;

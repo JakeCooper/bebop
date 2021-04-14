@@ -128,6 +128,16 @@ namespace Core.Generators.TypeScript
                     $"{tab}{tab}{CompileEncodeField(at.MemberType, $"{target}[{i}]", depth + 1, indentDepth + 2)}" + nl +
                     $"{tab}}}" + nl +
                     $"}}",
+                OptionType ot =>
+                    $"{{" + nl +
+                    $"{tab}const opt{depth} = {target};" + nl +
+                    $"{tab}if (opt{depth} === undefined) {{" + nl +
+                    $"{tab}{tab}view.writeByte(0);" + nl +
+                    $"{tab}}} else {{" + nl +
+                    $"{tab}{tab}view.writeByte(1);" + nl +
+                    $"{tab}{tab}{CompileEncodeField(ot.MemberType, $"opt{depth}", depth + 1, indentDepth + 2)}" + nl +
+                    $"{tab}}}" + nl +
+                    $"}}",
                 MapType mt =>
                     $"view.writeUint32({target}.size);" + nl +
                     $"for (const [k{depth}, v{depth}] of {target}) {{" + nl +
@@ -265,6 +275,14 @@ namespace Core.Generators.TypeScript
                     $"{tab}{tab}{target}[{i}] = x{depth};" + nl +
                     $"{tab}}}" + nl +
                     $"}}",
+                OptionType ot =>
+                    $"{{" + nl +
+                    $"{tab}if (view.readByte() > 0) {{" + nl +
+                    $"{tab}{tab}{CompileDecodeField(ot.MemberType, target, depth + 1)}" + nl +
+                    $"{tab}}} else {{" + nl +
+                    $"{tab}{tab}{target} = undefined;" + nl +
+                    $"{tab}}}" + nl +
+                    $"}}",
                 MapType mt =>
                     $"{{" + nl +
                     $"{tab}let length{depth} = view.readUint32();" + nl +
@@ -325,6 +343,8 @@ namespace Core.Generators.TypeScript
                     return "Uint8Array";
                 case ArrayType at:
                     return $"Array<{TypeName(at.MemberType)}>";
+                case OptionType ot:
+                    return $"({TypeName(ot.MemberType)} | undefined)";
                 case MapType mt:
                     return $"Map<{TypeName(mt.KeyType)}, {TypeName(mt.ValueType)}>";
                 case DefinedType dt:

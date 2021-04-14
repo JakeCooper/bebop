@@ -58,6 +58,12 @@ namespace Core.Lexer.Tokenization
         Array,
 
         /// <summary>
+        ///     The 'option' keyword which is reserved by the compiler
+        /// </summary>
+        [Keyword("option")]
+        Option,
+
+        /// <summary>
         ///     The 'union' keyword which is reserved by the compiler
         /// </summary>
         [Keyword("union")]
