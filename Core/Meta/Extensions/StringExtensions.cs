@@ -13,13 +13,40 @@ namespace Core.Meta.Extensions
 
         private static readonly string[] NewLines = { "\r\n", "\r", "\n" };
 
-      
+
         /// <summary>
         ///     Splits the specified <paramref name="value"/> based on line ending.
         /// </summary>
         /// <param name="value">The input string to split.</param>
         /// <returns>An array of each line in the string.</returns>
         public static string[] GetLines(this string value) => string.IsNullOrWhiteSpace(value) ? Array.Empty<string>() : value.Split(NewLines, StringSplitOptions.None);
+
+        public static string TrimWhitespaceAnd(this string value, params char[] trimChars)
+        {
+            var text = value.AsSpan();
+            
+            var i = 0;
+            for (; i < text.Length; ++i)
+            {
+                var cur = text[i]; 
+                if (!cur.IsWhitespace() && !trimChars.Contains(cur))
+                {
+                    break;
+                }
+            }
+            
+            var j = text.Length;
+            for (; j > i; --j)
+            {
+                var cur = text[j - 1];
+                if (!cur.IsWhitespace() && !trimChars.Contains(cur))
+                {
+                    break;
+                }
+            }
+
+            return text[i..j].ToString();
+        }
 
         /// <summary>
         ///     Determines if the specified char array contains only uppercase characters.
