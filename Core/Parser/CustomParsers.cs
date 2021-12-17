@@ -7,7 +7,7 @@ namespace Core.Parser
     public static class CustomParsers
     {
         public static Parser<TextSpan> ReadUntilTerminator(string terminator) =>
-            new ReadUntilTerminatorParser(terminator);
+            AnyCharBefore(Literals.Text(terminator), true, true);
 
         public static Parser<TextSpan> ReadAllBetweenTerminators(string startTerm, string endTerm) =>
             Terms.Text(startTerm).SkipAnd(ReadUntilTerminator(endTerm)).AndSkip(Literals.Text(endTerm));

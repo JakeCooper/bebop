@@ -1,5 +1,7 @@
-﻿using Xunit;
+﻿using Core.Meta;
+using Xunit;
 using Core.Parser;
+using Parlot;
 using Parlot.Fluent;
 
 namespace Core.Parser.Tests
@@ -32,6 +34,20 @@ namespace Core.Parser.Tests
             var valid = ParlotSchemaParser.lineComment.TryParse(text, out var result);
             Assert.True(valid);
             Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("const float32 myFloat = 123.432;", BaseType.Float32, "myFloat", "123.432")]
+        [InlineData("const uint32 myInt = 823;", BaseType.UInt32, "myInt", "823")]
+        [InlineData("const float64 neg = -23.4;", BaseType.Float64, "neg", "-23.4")]
+        [InlineData("const int16 neg2 = -52;", BaseType.Int16, "neg2", "-52")]
+        public void TestConstDefinition(string text, BaseType type, string ident, string value)
+        {
+            var valid = ParlotSchemaParser.constDefinition.TryParse(text, out var result);
+            Assert.True(valid);
+            Assert.Equal(type, result.type);
+            Assert.Equal(ident, result.ident.ToString());
+            Assert.Equal(value, result.value.ToString());
         }
     }
 }
